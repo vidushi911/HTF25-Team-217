@@ -1,0 +1,1586 @@
+import React, { useState, useEffect } from 'react';
+import { Calendar, Book, CheckSquare, FileText, Briefcase, Sparkles, User, Home, Plus, X, Mic, MicOff, Trash2, Edit2, Download, TrendingUp, Clock, Target } from 'lucide-react';
+
+// Toast Notification Component with enhanced animation
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  const bgColor = type === 'success' ? 'bg-green-800 text-white' : type === 'error' ? 'bg-red-800 text-white' : 'bg-white text-gray-800';
+
+  return (
+    <div className={`fixed top-4 right-4 ${bgColor} px-6 py-4 rounded-2xl shadow-2xl z-50 toast-slide-in transform hover:scale-105 transition-transform`}>
+      <div className="flex items-center space-x-2">
+        <span className="text-2xl">{type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}</span>
+        <span className="font-semibold">{message}</span>
+      </div>
+    </div>
+  );
+};
+
+// Enhanced Sidebar Navigation with beautiful animations
+const Sidebar = ({ currentPage, setCurrentPage }) => {
+  const navItems = [
+    { id: 'home', icon: Home, label: 'Dashboard', gradient: 'bg-white text-gray-800' },
+    { id: 'timetable', icon: Calendar, label: 'Timetable', gradient: 'bg-green-800 text-white' },
+    { id: 'assignments', icon: CheckSquare, label: 'Assignments', gradient: 'bg-green-800 text-white' },
+    { id: 'materials', icon: FileText, label: 'Materials', gradient: 'bg-white text-gray-800' },
+    { id: 'projects', icon: Briefcase, label: 'Projects', gradient: 'bg-red-800 text-white' },
+    { id: 'ai-hub', icon: Sparkles, label: 'AI Hub', gradient: 'bg-white text-gray-800' },
+    { id: 'profile', icon: User, label: 'Profile', gradient: 'bg-red-800 text-white' }
+  ];
+
+  return (
+    <div className="w-64 bg-red-800 text-white p-6 h-screen fixed left-0 top-0 shadow-2xl overflow-y-auto">
+      <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
+        <h1 className="text-4xl font-black text-white animate-pulse">
+          AURA
+        </h1>
+        <p className="text-xs text-purple-200 mt-1 font-medium tracking-wide">✨ AI Student Assistant</p>
+      </div>
+      
+      <nav className="space-y-3">
+        {navItems.map((item, index) => (
+          <button
+            key={item.id}
+            onClick={() => setCurrentPage(item.id)}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 button-hover-lift ${
+          currentPage === item.id 
+            ? `${item.gradient} shadow-2xl scale-105 animate-glow-pulse` 
+            : 'hover:bg-white hover:bg-opacity-20 hover:shadow-lg'
+            }`}
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <item.icon size={22} className={currentPage === item.id ? 'animate-bounce-gentle' : ''} />
+            <span className="font-bold">{item.label}</span>
+          </button>
+        ))}
+      </nav>
+
+      <div className="mt-8 p-4 bg-white rounded-xl shadow-lg card-hover-glow sparkle">
+        <p className="text-sm font-bold text-gray-800 mb-2">🔥 Productivity Streak</p>
+        <p className="text-3xl font-black text-gray-800 neon-text">7 Days</p>
+      </div>
+    </div>
+  );
+};
+
+// Enhanced Home Dashboard with beautiful animations
+const HomePage = ({ assignments, timetable, reminders }) => {
+  const todayClasses = timetable.filter(c => c.day === new Date().toLocaleDateString('en-US', { weekday: 'long' }));
+  const upcomingDeadlines = assignments.filter(a => !a.completed).slice(0, 3);
+  
+  const weeklyData = [65, 72, 68, 85, 78, 90, 88];
+  const maxValue = Math.max(...weeklyData);
+
+  return (
+    <div className="space-y-6">
+  <div className="bg-white rounded-3xl p-10 text-gray-800 shadow-2xl card-hover-glow relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32 animate-float"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24 animate-float" style={{animationDelay: '1s'}}></div>
+        <div className="absolute inset-0 animate-shimmer"></div>
+        <div className="relative z-10">
+          <h2 className="text-4xl font-black mb-3 animate-fade-in neon-text text-gray-800">Welcome back, Student! 🎓</h2>
+          <p className="text-xl text-gray-600 font-medium animate-bounce-gentle">Let's crush today's goals and make it amazing!</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl p-6 shadow-xl border-t-4 border-green-400 card-3d card-hover-glow glow-border">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-black text-gray-800 flex items-center">
+              <div className="bg-green-800 p-2 rounded-xl mr-3 shadow-lg animate-bounce-gentle">
+                <Calendar className="text-white" size={24} />
+              </div>
+              Today's Classes
+            </h3>
+            <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-bold animate-glow-pulse sparkle">
+              {todayClasses.length}
+            </span>
+          </div>
+          {todayClasses.length > 0 ? (
+            <div className="space-y-3">
+              {todayClasses.map((cls, i) => (
+                <div key={i} className="bg-gray-50 p-3 rounded-xl border-l-4 border-green-400 transform hover:scale-105 transition-all duration-200">
+                  <p className="font-bold text-gray-800">{cls.subject}</p>
+                  <p className="text-sm text-gray-600 font-medium">{cls.time}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-6xl mb-2">🎉</p>
+              <p className="text-gray-600 font-semibold">No classes today!</p>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 shadow-xl border-t-4 border-yellow-400 card-3d card-hover-glow glow-border">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-black text-gray-800 flex items-center">
+              <div className="bg-red-800 p-2 rounded-xl mr-3 shadow-lg animate-bounce-gentle" style={{animationDelay: '0.2s'}}>
+                <Clock className="text-white" size={24} />
+              </div>
+              Deadlines
+            </h3>
+            <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold animate-pulse sparkle">
+              {upcomingDeadlines.length}
+            </span>
+          </div>
+          <div className="space-y-3">
+            {upcomingDeadlines.map((assignment, i) => (
+              <div key={i} className="bg-gray-50 p-3 rounded-xl border-l-4 border-yellow-400 transform hover:scale-105 transition-all duration-200">
+                <p className="font-bold text-gray-800">{assignment.subject}</p>
+                <p className="text-sm text-gray-600 font-medium">{assignment.dueDate}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 shadow-xl border-t-4 border-purple-400 card-3d card-hover-glow glow-border">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-black text-gray-800 flex items-center">
+              <div className="bg-white p-2 rounded-xl mr-3 shadow-lg animate-bounce-gentle" style={{animationDelay: '0.4s'}}>
+                <Target className="text-gray-800" size={24} />
+              </div>
+              Reminders
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {reminders.slice(0, 4).map((reminder, i) => (
+              <div key={i} className="flex items-start transform hover:translate-x-2 transition-all duration-200">
+                <span className="text-purple-500 mr-2 text-xl">•</span>
+                <p className="text-sm text-gray-700 font-medium">{reminder}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div className="rounded-2xl p-8 bg-white text-gray-800 shadow-2xl card-hover-glow relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-20 rounded-full -mr-16 -mt-16 animate-float"></div>
+          <div className="absolute inset-0 animate-shimmer"></div>
+          <div className="relative z-10">
+            <h3 className="text-2xl font-black mb-4">💡 Daily Motivation</h3>
+            <p className="italic text-lg font-medium leading-relaxed">"Success is not final, failure is not fatal: it is the courage to continue that counts."</p>
+            <p className="text-sm mt-3 opacity-90 font-semibold">— Winston Churchill</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 shadow-xl card-hover-glow card-3d glow-border">
+          <h3 className="text-lg font-black text-gray-800 mb-4 flex items-center">
+            <div className="bg-white p-2 rounded-xl mr-3 shadow-lg animate-wiggle">
+              <TrendingUp className="text-gray-800" size={24} />
+            </div>
+            Weekly Productivity
+          </h3>
+          <div className="flex items-end justify-between h-40 space-x-2">
+            {weeklyData.map((value, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center group">
+                <div 
+                  className="w-full bg-green-800 rounded-t-xl transition-all duration-500 shadow-lg transform hover:scale-110"
+                  style={{ height: `${(value / maxValue) * 100}%` }}
+                ></div>
+                <span className="text-xs text-gray-600 mt-2 font-bold group-hover:text-blue-600 transition-colors">
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl p-6 text-gray-800 shadow-2xl card-hover-glow sparkle">
+          <p className="text-sm font-bold opacity-90 mb-1">Total Tasks</p>
+          <p className="text-5xl font-black mb-2">{assignments.length}</p>
+          <p className="text-sm opacity-90 font-medium">Keep going! 🚀</p>
+        </div>
+        <div className="bg-white rounded-2xl p-6 text-gray-800 shadow-2xl card-hover-glow sparkle" style={{animationDelay: '0.5s'}}>
+          <p className="text-sm font-bold opacity-90 mb-1">Completed</p>
+          <p className="text-5xl font-black mb-2">{assignments.filter(a => a.completed).length}</p>
+          <p className="text-sm opacity-90 font-medium">Awesome work! 🎯</p>
+        </div>
+        <div className="bg-white rounded-2xl p-6 text-gray-800 shadow-2xl card-hover-glow sparkle" style={{animationDelay: '1s'}}>
+          <p className="text-sm font-bold opacity-90 mb-1">Success Rate</p>
+          <p className="text-5xl font-black mb-2">
+            {assignments.length > 0 ? Math.round((assignments.filter(a => a.completed).length / assignments.length) * 100) : 0}%
+          </p>
+          <p className="text-sm opacity-90 font-medium">Outstanding! ⭐</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Enhanced Timetable Page
+const TimetablePage = ({ timetable, setTimetable, showToast }) => {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newClass, setNewClass] = useState({ day: 'Monday', subject: '', time: '', room: '' });
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const dayColors = {
+    'Monday': 'bg-white text-gray-800',
+    'Tuesday': 'bg-green-800 text-white',
+    'Wednesday': 'bg-white text-gray-800',
+    'Thursday': 'bg-white text-gray-800',
+    'Friday': 'bg-red-800 text-white'
+  };
+
+  const addClass = () => {
+    if (newClass.subject && newClass.time) {
+      setTimetable([...timetable, { ...newClass }]);
+      setNewClass({ day: 'Monday', subject: '', time: '', room: '' });
+      setShowAddModal(false);
+      showToast('Class added successfully! 🎉', 'success');
+    }
+  };
+
+  const deleteClass = (index) => {
+    setTimetable(timetable.filter((_, i) => i !== index));
+    showToast('Class removed ✓', 'success');
+  };
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-4xl font-black text-gray-800 flex items-center">
+          <span className="text-5xl mr-3">📅</span>
+          My Timetable
+        </h2>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="bg-green-800 text-white px-8 py-3 rounded-xl font-bold flex items-center hover:shadow-2xl transition-all transform hover:scale-110 hover:-translate-y-1"
+        >
+          <Plus size={20} className="mr-2" /> Add Class
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        {days.map((day, dayIndex) => (
+          <div key={day} className="bg-white rounded-2xl p-5 shadow-xl transform hover:scale-105 transition-all duration-300 hover:shadow-2xl">
+            <div className={`${dayColors[day]} font-black text-center py-3 rounded-xl mb-4 shadow-lg`}>
+              {day}
+            </div>
+            <div className="space-y-3">
+              {timetable
+                .filter(c => c.day === day)
+                .map((cls, i) => (
+                  <div key={i} className="bg-gray-50 p-4 rounded-xl relative group transform hover:scale-105 transition-all duration-200 hover:shadow-lg border-l-4 border-blue-400">
+                    <button
+                      onClick={() => deleteClass(timetable.indexOf(cls))}
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 text-white p-1 rounded-lg hover:bg-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                    <p className="font-bold text-gray-800 text-sm mb-1">{cls.subject}</p>
+                    <p className="text-xs text-gray-600 font-semibold">{cls.time}</p>
+                    {cls.room && <p className="text-xs text-blue-600 font-bold mt-1">📍 {cls.room}</p>}
+                  </div>
+                ))}
+              {timetable.filter(c => c.day === day).length === 0 && (
+                <div className="text-center py-8 text-gray-400">
+                  <p className="text-3xl mb-2">😊</p>
+                  <p className="text-sm font-semibold">Free day!</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl transform scale-100 modal-pop-in">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-3xl font-black text-gray-800">Add New Class</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors transform hover:rotate-90 duration-300">
+                <X size={28} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <select
+                value={newClass.day}
+                onChange={(e) => setNewClass({ ...newClass, day: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-300 outline-none font-semibold transition-all"
+              >
+                {days.map(day => <option key={day} value={day}>{day}</option>)}
+              </select>
+              <input
+                type="text"
+                placeholder="Subject Name"
+                value={newClass.subject}
+                onChange={(e) => setNewClass({ ...newClass, subject: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-300 outline-none font-semibold transition-all"
+              />
+              <input
+                type="text"
+                placeholder="Time (e.g., 9:00 AM - 10:00 AM)"
+                value={newClass.time}
+                onChange={(e) => setNewClass({ ...newClass, time: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-300 outline-none font-semibold transition-all"
+              />
+              <input
+                type="text"
+                placeholder="Room Number (optional)"
+                value={newClass.room}
+                onChange={(e) => setNewClass({ ...newClass, room: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-300 outline-none font-semibold transition-all"
+              />
+              <button
+                onClick={addClass}
+                className="w-full bg-green-800 text-white py-4 rounded-xl font-black text-lg hover:shadow-2xl transition-all transform hover:scale-105"
+              >
+                Add Class ✨
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Enhanced Assignments Page
+const AssignmentsPage = ({ assignments, setAssignments, showToast }) => {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [filter, setFilter] = useState('all');
+  const [newAssignment, setNewAssignment] = useState({ subject: '', title: '', dueDate: '', completed: false });
+
+  const addAssignment = () => {
+    if (newAssignment.subject && newAssignment.title && newAssignment.dueDate) {
+      setAssignments([...assignments, { ...newAssignment, id: Date.now() }]);
+      setNewAssignment({ subject: '', title: '', dueDate: '', completed: false });
+      setShowAddModal(false);
+      showToast('Assignment added! 🎯', 'success');
+    }
+  };
+
+  const toggleComplete = (id) => {
+    setAssignments(assignments.map(a => a.id === id ? { ...a, completed: !a.completed } : a));
+    showToast('Assignment updated! ✓', 'success');
+  };
+
+  const deleteAssignment = (id) => {
+    setAssignments(assignments.filter(a => a.id !== id));
+    showToast('Assignment deleted 🗑️', 'success');
+  };
+
+  const filteredAssignments = assignments.filter(a => 
+    filter === 'all' ? true : filter === 'completed' ? a.completed : !a.completed
+  );
+
+  const completionRate = assignments.length > 0 
+    ? Math.round((assignments.filter(a => a.completed).length / assignments.length) * 100) 
+    : 0;
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-4xl font-black text-gray-800 flex items-center">
+          <span className="text-5xl mr-3">✅</span>
+          Assignments
+        </h2>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="bg-green-800 text-white px-8 py-3 rounded-xl font-bold flex items-center hover:shadow-2xl transition-all transform hover:scale-110 hover:-translate-y-1"
+        >
+          <Plus size={20} className="mr-2" /> Add Assignment
+        </button>
+      </div>
+
+      <div className="bg-green-800 text-white rounded-2xl p-8 shadow-2xl mb-6 transform hover:scale-[1.02] transition-all duration-300">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-black text-white text-2xl">Overall Progress</h3>
+          <span className="text-5xl font-black text-white">{completionRate}%</span>
+        </div>
+            <div className="w-full bg-white bg-opacity-30 rounded-full h-6 backdrop-blur-sm">
+          <div 
+            className="bg-yellow-300 h-6 rounded-full transition-all duration-1000 shadow-lg flex items-center justify-end pr-2"
+            style={{ width: `${completionRate}%` }}
+          >
+            <span className="text-white font-bold text-xs">🚀</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex space-x-4 mb-6">
+        {[
+          { id: 'all', label: 'All Tasks', gradient: 'bg-white text-gray-800' },
+          { id: 'pending', label: 'Pending', gradient: 'bg-white text-gray-800' },
+          { id: 'completed', label: 'Completed', gradient: 'bg-green-800 text-white' }
+        ].map(f => (
+          <button
+            key={f.id}
+            onClick={() => setFilter(f.id)}
+              className={`px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-110 ${
+               filter === f.id 
+                 ? `${f.gradient} shadow-2xl scale-105` 
+                 : 'bg-white text-gray-700 hover:shadow-xl'
+             }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-4">
+        {filteredAssignments.map(assignment => (
+          <div 
+            key={assignment.id}
+            className={`bg-white rounded-2xl p-6 shadow-xl border-l-8 ${
+              assignment.completed ? 'border-green-400 opacity-75' : 'border-yellow-400'
+            } hover:shadow-2xl transition-all transform hover:scale-[1.02] hover:-translate-y-1`}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-4 flex-1">
+                <input
+                  type="checkbox"
+                  checked={assignment.completed}
+                  onChange={() => toggleComplete(assignment.id)}
+                  className="mt-1 w-6 h-6 text-green-600 rounded-lg focus:ring-4 focus:ring-green-300 cursor-pointer transform hover:scale-125 transition-transform"
+                />
+                <div className="flex-1">
+                  <h3 className={`text-xl font-black ${assignment.completed ? 'line-through text-gray-400' : 'text-gray-800'}`}>
+                    {assignment.title}
+                  </h3>
+                  <p className="text-blue-600 font-bold text-lg mt-1">{assignment.subject}</p>
+                  <p className="text-sm text-gray-500 mt-2 font-semibold">📅 Due: {assignment.dueDate}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => deleteAssignment(assignment.id)}
+                className="text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-3 rounded-xl transition-all transform hover:scale-110 hover:rotate-12"
+              >
+                <Trash2 size={20} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl modal-pop-in">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-3xl font-black text-gray-800">Add Assignment</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors transform hover:rotate-90 duration-300">
+                <X size={28} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Subject"
+                value={newAssignment.subject}
+                onChange={(e) => setNewAssignment({ ...newAssignment, subject: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-300 outline-none font-semibold transition-all"
+              />
+              <input
+                type="text"
+                placeholder="Assignment Title"
+                value={newAssignment.title}
+                onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-300 outline-none font-semibold transition-all"
+              />
+              <input
+                type="date"
+                value={newAssignment.dueDate}
+                onChange={(e) => setNewAssignment({ ...newAssignment, dueDate: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-300 outline-none font-semibold transition-all"
+              />
+              <button
+                onClick={addAssignment}
+                className="w-full bg-green-800 text-white py-4 rounded-xl font-black text-lg hover:shadow-2xl transition-all transform hover:scale-105"
+              >
+                Add Assignment ✨
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Enhanced Materials Page
+const MaterialsPage = ({ materials, setMaterials, showToast }) => {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newMaterial, setNewMaterial] = useState({ title: '', subject: '', type: 'PDF' });
+  const [summaries, setSummaries] = useState({});
+  const [loading, setLoading] = useState({});
+
+  const addMaterial = () => {
+    if (newMaterial.title && newMaterial.subject) {
+      setMaterials([...materials, { ...newMaterial, id: Date.now() }]);
+      setNewMaterial({ title: '', subject: '', type: 'PDF' });
+      setShowAddModal(false);
+      showToast('Material added! 📚', 'success');
+    }
+  };
+
+  const summarizeMaterial = async (id) => {
+    setLoading({ ...loading, [id]: true });
+    setTimeout(() => {
+      const mockSummary = "This document covers key concepts including fundamental principles, practical applications, and important examples. Main topics discussed are theoretical frameworks, case studies, and implementation strategies. Critical points to remember include core definitions and their real-world applications.";
+      setSummaries({ ...summaries, [id]: mockSummary });
+      setLoading({ ...loading, [id]: false });
+      showToast('Summary generated! ✨', 'success');
+    }, 2000);
+  };
+
+  const typeColors = {
+    'PDF': 'bg-red-800 text-white',
+    'Notes': 'bg-white text-gray-800',
+    'Slides': 'bg-white text-gray-800'
+  };
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-4xl font-black text-gray-800 flex items-center">
+          <span className="text-5xl mr-3">📚</span>
+          Lecture Materials
+        </h2>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="bg-green-800 text-white px-8 py-3 rounded-xl font-bold flex items-center hover:shadow-2xl transition-all transform hover:scale-110 hover:-translate-y-1"
+        >
+          <Plus size={20} className="mr-2" /> Add Material
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        {materials.map(material => (
+          <div key={material.id} className="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all transform hover:scale-[1.02] border-l-8 border-purple-400">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start space-x-4 flex-1">
+                <div className={`${typeColors[material.type]} p-4 rounded-2xl shadow-lg transform hover:rotate-12 transition-all duration-300`}>
+                  <FileText className="text-white" size={32} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-black text-gray-800 mb-1">{material.title}</h3>
+                  <p className="text-blue-600 font-bold text-lg">{material.subject}</p>
+                  <span className={`${typeColors[material.type]} px-3 py-1 rounded-full mt-2 inline-block font-bold text-xs shadow-lg`}>
+                    {material.type}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => summarizeMaterial(material.id)}
+                disabled={loading[material.id]}
+                className="bg-green-800 text-white px-6 py-3 rounded-xl font-bold hover:shadow-2xl transition-all transform hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading[material.id] ? (
+                  <span className="flex items-center">
+                    <span className="animate-spin mr-2">⚡</span>
+                    Summarizing...
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    ✨ Summarize
+                  </span>
+                )}
+              </button>
+            </div>
+            
+            {summaries[material.id] && (
+              <div className="mt-4 p-6 bg-gray-50 rounded-2xl border-l-8 border-green-400 transform hover:scale-[1.02] transition-all shadow-lg">
+                <h4 className="font-black text-gray-800 mb-3 text-lg flex items-center">
+                  <span className="text-2xl mr-2">📝</span>
+                  AI Summary:
+                </h4>
+                <p className="text-gray-700 font-medium leading-relaxed">{summaries[material.id]}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl modal-pop-in">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-3xl font-black text-gray-800">Add Material</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors transform hover:rotate-90 duration-300">
+                <X size={28} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Material Title"
+                value={newMaterial.title}
+                onChange={(e) => setNewMaterial({ ...newMaterial, title: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-300 outline-none font-semibold transition-all"
+              />
+              <input
+                type="text"
+                placeholder="Subject"
+                value={newMaterial.subject}
+                onChange={(e) => setNewMaterial({ ...newMaterial, subject: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-300 outline-none font-semibold transition-all"
+              />
+              <select
+                value={newMaterial.type}
+                onChange={(e) => setNewMaterial({ ...newMaterial, type: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-300 outline-none font-semibold transition-all"
+              >
+                <option>PDF</option>
+                <option>Notes</option>
+                <option>Slides</option>
+              </select>
+              <button
+                onClick={addMaterial}
+                className="w-full bg-green-800 text-white py-4 rounded-xl font-black text-lg hover:shadow-2xl transition-all transform hover:scale-105"
+              >
+                Add Material ✨
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Enhanced Projects Page
+const ProjectsPage = ({ projects, setProjects, showToast }) => {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newProject, setNewProject] = useState({ title: '', subject: '', milestones: [] });
+  const [newMilestone, setNewMilestone] = useState('');
+
+  const addProject = () => {
+    if (newProject.title && newProject.subject) {
+      setProjects([...projects, { ...newProject, id: Date.now() }]);
+      setNewProject({ title: '', subject: '', milestones: [] });
+      setShowAddModal(false);
+      showToast('Project added! 🚀', 'success');
+    }
+  };
+
+  const addMilestone = () => {
+    if (newMilestone) {
+      setNewProject({
+        ...newProject,
+        milestones: [...newProject.milestones, { text: newMilestone, completed: false }]
+      });
+      setNewMilestone('');
+    }
+  };
+
+  const toggleMilestone = (projectId, milestoneIndex) => {
+    setProjects(projects.map(p => {
+      if (p.id === projectId) {
+        const updated = { ...p };
+        updated.milestones[milestoneIndex].completed = !updated.milestones[milestoneIndex].completed;
+        return updated;
+      }
+      return p;
+    }));
+  };
+
+  const projectGradients = [
+    'bg-red-800 text-white',
+    'bg-white text-gray-800',
+    'bg-green-800 text-white',
+    'bg-white text-gray-800',
+    'bg-white text-gray-800'
+  ];
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-4xl font-black text-gray-800 flex items-center">
+          <span className="text-5xl mr-3">🚀</span>
+          Projects
+        </h2>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="bg-green-800 text-white px-8 py-3 rounded-xl font-bold flex items-center hover:shadow-2xl transition-all transform hover:scale-110 hover:-translate-y-1"
+        >
+          <Plus size={20} className="mr-2" /> Add Project
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {projects.map((project, index) => {
+          const completed = project.milestones.filter(m => m.completed).length;
+          const total = project.milestones.length;
+          const progress = total > 0 ? (completed / total) * 100 : 0;
+
+          return (
+            <div key={project.id} className="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 border-t-8 border-orange-400">
+              <div className={`${projectGradients[index % projectGradients.length]} p-4 rounded-xl mb-4 transform hover:scale-105 transition-all shadow-lg`}>
+                <h3 className="text-2xl font-black mb-1">{project.title}</h3>
+                <p className="font-bold opacity-90">{project.subject}</p>
+              </div>
+              
+              <div className="mb-4">
+                <div className="flex justify-between mb-2">
+                  <span className="text-gray-700 font-bold">Progress</span>
+                  <span className="font-black text-2xl text-green-800">
+                    {Math.round(progress)}%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-4 shadow-inner">
+                  <div 
+                    className={`${projectGradients[index % projectGradients.length]} h-4 rounded-full transition-all duration-1000 shadow-lg`}
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-black text-gray-700 mb-3 text-lg">Milestones:</h4>
+                {project.milestones.map((milestone, i) => (
+                  <div key={i} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all transform hover:translate-x-2">
+                    <input
+                      type="checkbox"
+                      checked={milestone.completed}
+                      onChange={() => toggleMilestone(project.id, i)}
+                      className="w-5 h-5 text-green-600 rounded-lg cursor-pointer transform hover:scale-125 transition-transform"
+                    />
+                    <span className={`font-semibold ${milestone.completed ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+                      {milestone.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl modal-pop-in">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-3xl font-black text-gray-800">Add Project</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors transform hover:rotate-90 duration-300">
+                <X size={28} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Project Title"
+                value={newProject.title}
+                onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-orange-300 outline-none font-semibold transition-all"
+              />
+              <input
+                type="text"
+                placeholder="Subject"
+                value={newProject.subject}
+                onChange={(e) => setNewProject({ ...newProject, subject: e.target.value })}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-orange-300 outline-none font-semibold transition-all"
+              />
+              
+              <div>
+                <label className="block text-sm font-black text-gray-700 mb-2">Milestones</label>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    placeholder="Add milestone"
+                    value={newMilestone}
+                    onChange={(e) => setNewMilestone(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addMilestone()}
+                    className="flex-1 p-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-orange-300 outline-none font-semibold transition-all"
+                  />
+                  <button
+                    onClick={addMilestone}
+                    className="bg-green-800 text-white px-6 rounded-xl font-bold hover:shadow-lg transform hover:scale-110 transition-all"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="mt-3 space-y-2">
+                  {newProject.milestones.map((m, i) => (
+                    <div key={i} className="text-sm text-gray-700 font-semibold flex items-center bg-gray-50 p-2 rounded-lg">
+                      <span className="mr-2 text-orange-500">✓</span> {m.text}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={addProject}
+                className="w-full bg-green-800 text-white py-4 rounded-xl font-black text-lg hover:shadow-2xl transition-all transform hover:scale-105"
+              >
+                Add Project ✨
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Enhanced AI Hub Page
+const AIHubPage = ({ showToast }) => {
+  const [activeAI, setActiveAI] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [quizTopic, setQuizTopic] = useState('');
+  const [quizQuestions, setQuizQuestions] = useState([]);
+  const [studyPlan, setStudyPlan] = useState(null);
+  const [isListening, setIsListening] = useState(false);
+  const [planInput, setPlanInput] = useState({ hours: '', subjects: '' });
+
+  const aiTools = [
+    { id: 'tutor', title: 'AI Tutor', icon: '🤖', color: 'bg-white text-gray-800', desc: 'Ask me anything!' },
+    { id: 'quiz', title: 'Quiz Generator', icon: '📝', color: 'bg-green-800 text-white', desc: 'Generate practice MCQs' },
+    { id: 'summarizer', title: 'PDF Summarizer', icon: '📄', color: 'bg-white text-gray-800', desc: 'Summarize documents' },
+    { id: 'planner', title: 'Study Planner', icon: '📅', color: 'bg-white text-gray-800', desc: 'Create study schedules' }
+  ];
+
+  const sendMessage = () => {
+    if (chatInput.trim()) {
+      setChatMessages([...chatMessages, { type: 'user', text: chatInput }]);
+      setChatInput('');
+      
+      setTimeout(() => {
+        const responses = [
+          "That's a great question! Let me explain...",
+          "Here's what you need to know about that topic:",
+          "I can help you understand this concept better:",
+          "Let's break this down step by step:"
+        ];
+        setChatMessages(prev => [...prev, { 
+          type: 'ai', 
+          text: responses[Math.floor(Math.random() * responses.length)] + " " + 
+                "The key concept here involves understanding the fundamental principles and their applications. " +
+                "Would you like me to explain any specific part in more detail?"
+        }]);
+      }, 1000);
+    }
+  };
+
+  const generateQuiz = () => {
+    if (quizTopic) {
+      const mockQuestions = [
+        { q: `What is the main principle of ${quizTopic}?`, options: ['Option A', 'Option B', 'Option C', 'Option D'], correct: 1 },
+        { q: `Which of the following best describes ${quizTopic}?`, options: ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4'], correct: 2 },
+        { q: `What is an important application of ${quizTopic}?`, options: ['Answer A', 'Answer B', 'Answer C', 'Answer D'], correct: 0 }
+      ];
+      setQuizQuestions(mockQuestions);
+      showToast('Quiz generated! 🎯', 'success');
+    }
+  };
+
+  const generateStudyPlan = () => {
+    if (planInput.hours && planInput.subjects) {
+      const subjects = planInput.subjects.split(',').map(s => s.trim());
+      const hoursPerSubject = Math.floor(parseInt(planInput.hours) / subjects.length);
+      
+      const plan = subjects.map(subject => ({
+        subject,
+        hours: hoursPerSubject,
+        tasks: ['Review notes', 'Practice problems', 'Create summary']
+      }));
+      
+      setStudyPlan(plan);
+      showToast('Study plan created! 📅', 'success');
+    }
+  };
+
+  const toggleVoice = () => {
+    if (!isListening) {
+      setIsListening(true);
+      showToast('Voice activated! 🎤', 'success');
+      setTimeout(() => {
+        setIsListening(false);
+        setChatInput('This is a voice input simulation');
+      }, 3000);
+    } else {
+      setIsListening(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="text-4xl font-black text-gray-800 mb-6 flex items-center">
+        <span className="text-5xl mr-3">✨</span>
+        AI Hub
+      </h2>
+      
+      {!activeAI ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {aiTools.map((tool, index) => (
+            <div
+              key={tool.id}
+              onClick={() => setActiveAI(tool.id)}
+              className={`${tool.color} p-10 rounded-3xl shadow-2xl cursor-pointer transform hover:scale-110 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden`}
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
+              <div className="relative z-10">
+                <div className="text-7xl mb-4 transform hover:rotate-12 hover:scale-125 transition-all duration-300 inline-block">
+                  {tool.icon}
+                </div>
+                <h3 className="text-3xl font-black mb-3">{tool.title}</h3>
+                <p className="text-lg opacity-90 font-semibold">{tool.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
+          <button
+            onClick={() => {
+              setActiveAI(null);
+              setChatMessages([]);
+              setQuizQuestions([]);
+              setStudyPlan(null);
+            }}
+            className="mb-6 text-blue-600 hover:text-blue-700 font-black text-lg flex items-center transform hover:translate-x-2 transition-all"
+          >
+            ← Back to AI Hub
+          </button>
+
+          {activeAI === 'tutor' && (
+            <div>
+              <h3 className="text-3xl font-black text-gray-800 mb-6 flex items-center">
+                <span className="text-4xl mr-3">🤖</span>
+                AI Tutor Chat
+              </h3>
+              <div className="bg-gray-50 rounded-2xl p-6 h-96 overflow-y-auto mb-6 space-y-4 shadow-inner">
+                {chatMessages.length === 0 && (
+                  <div className="text-center text-gray-500 mt-32">
+                    <p className="text-6xl mb-4">💬</p>
+                    <p className="text-xl font-bold">Ask me anything!</p>
+                    <p className="font-semibold">I'm here to help you learn.</p>
+                  </div>
+                )}
+                {chatMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'} message-slide-in`}>
+                    <div className={`max-w-md p-4 rounded-2xl shadow-lg ${
+                      msg.type === 'user' 
+              ? 'bg-green-800 text-white' 
+                : 'bg-white border-2 border-gray-200 text-gray-800'
+                    } font-semibold`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  placeholder="Type your question..."
+                  className="flex-1 p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-300 outline-none font-semibold transition-all"
+                />
+                <button
+                  onClick={toggleVoice}
+                  className={`p-4 rounded-xl ${isListening ? 'bg-red-800 animate-pulse' : 'bg-gray-200'} hover:shadow-2xl transition-all transform hover:scale-110`}
+                >
+                  {isListening ? <MicOff className="text-white" size={24} /> : <Mic className="text-gray-700" size={24} />}
+                </button>
+                <button
+                  onClick={sendMessage}
+                  className="bg-green-800 text-white px-8 rounded-xl font-bold hover:shadow-2xl transition-all transform hover:scale-110"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeAI === 'quiz' && (
+            <div>
+              <h3 className="text-3xl font-black text-gray-800 mb-6 flex items-center">
+                <span className="text-4xl mr-3">📝</span>
+                Quiz Generator
+              </h3>
+              <div className="flex space-x-3 mb-6">
+                <input
+                  type="text"
+                  value={quizTopic}
+                  onChange={(e) => setQuizTopic(e.target.value)}
+                  placeholder="Enter topic (e.g., Machine Learning)"
+                  className="flex-1 p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-green-300 outline-none font-semibold transition-all"
+                />
+                <button
+                  onClick={generateQuiz}
+                  className="bg-green-800 text-white px-8 rounded-xl font-bold hover:shadow-2xl transition-all transform hover:scale-110"
+                >
+                  Generate Quiz
+                </button>
+              </div>
+              
+              {quizQuestions.length > 0 && (
+                <div className="space-y-6">
+                  {quizQuestions.map((q, i) => (
+                    <div key={i} className="bg-gray-50 p-6 rounded-2xl border-l-8 border-green-400 shadow-lg transform hover:scale-[1.02] transition-all">
+                      <h4 className="font-black text-gray-800 mb-4 text-xl">Question {i + 1}: {q.q}</h4>
+                      <div className="space-y-3">
+                        {q.options.map((opt, j) => (
+                          <div key={j} className="flex items-center space-x-3 p-3 bg-white rounded-xl hover:bg-gray-50 transition-all transform hover:translate-x-2">
+                            <input type="radio" name={`q${i}`} className="w-5 h-5 text-green-600 cursor-pointer" />
+                            <label className="text-gray-800 font-semibold cursor-pointer">{opt}</label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeAI === 'summarizer' && (
+            <div>
+              <h3 className="text-3xl font-black text-gray-800 mb-6 flex items-center">
+                <span className="text-4xl mr-3">📄</span>
+                PDF Summarizer
+              </h3>
+              <div className="border-4 border-dashed border-gray-300 rounded-2xl p-20 text-center hover:border-blue-500 transition-all cursor-pointer transform hover:scale-105 bg-gray-50">
+                <div className="transform hover:scale-125 transition-all duration-300 inline-block">
+                  <FileText className="mx-auto text-gray-400 mb-4" size={64} />
+                </div>
+                <p className="text-gray-700 font-bold text-xl mb-2">Drag and drop your PDF here</p>
+                <p className="text-gray-500 font-semibold">or click to browse</p>
+              </div>
+              <p className="text-center text-gray-500 mt-6 font-semibold bg-blue-50 p-4 rounded-xl">
+                💡 Tip: Visit the Lecture Materials page to use the summarizer with your uploaded files
+              </p>
+            </div>
+          )}
+
+          {activeAI === 'planner' && (
+            <div>
+              <h3 className="text-3xl font-black text-gray-800 mb-6 flex items-center">
+                <span className="text-4xl mr-3">📅</span>
+                Study Planner
+              </h3>
+              <div className="space-y-4 mb-6">
+                <input
+                  type="number"
+                  value={planInput.hours}
+                  onChange={(e) => setPlanInput({ ...planInput, hours: e.target.value })}
+                  placeholder="Total study hours available"
+                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-300 outline-none font-semibold transition-all"
+                />
+                <input
+                  type="text"
+                  value={planInput.subjects}
+                  onChange={(e) => setPlanInput({ ...planInput, subjects: e.target.value })}
+                  placeholder="Subjects (comma-separated, e.g., Math, Physics, Chemistry)"
+                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-300 outline-none font-semibold transition-all"
+                />
+                <button
+                  onClick={generateStudyPlan}
+                  className="w-full bg-green-800 text-white py-4 rounded-xl font-black text-lg hover:shadow-2xl transition-all transform hover:scale-105"
+                >
+                  Generate Study Plan ✨
+                </button>
+              </div>
+
+              {studyPlan && (
+                <div className="space-y-4">
+                  <h4 className="font-black text-gray-800 text-2xl mb-4 flex items-center">
+                    <span className="text-3xl mr-2">📋</span>
+                    Your Personalized Study Plan:
+                  </h4>
+                  {studyPlan.map((item, i) => (
+                    <div key={i} className="bg-white p-6 rounded-2xl border-l-8 border-purple-500 shadow-lg transform hover:scale-[1.02] transition-all">
+                      <h5 className="font-black text-purple-700 mb-3 text-xl">{item.subject} - {item.hours} hours</h5>
+                      <ul className="space-y-2">
+                        {item.tasks.map((task, j) => (
+                          <li key={j} className="text-gray-700 font-semibold flex items-center p-2 bg-white rounded-lg">
+                            <span className="text-purple-500 mr-3 text-xl">✓</span> {task}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Enhanced Profile Page
+const ProfilePage = ({ assignments, projects }) => {
+  const completedAssignments = assignments.filter(a => a.completed).length;
+  const totalAssignments = assignments.length;
+  const assignmentProgress = totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0;
+
+  const completedProjects = projects.filter(p => 
+    p.milestones.length > 0 && p.milestones.every(m => m.completed)
+  ).length;
+
+  return (
+    <div>
+  <div className="bg-white rounded-3xl p-10 text-gray-800 shadow-2xl mb-6 transform hover:scale-[1.02] transition-all relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
+        <div className="flex items-center space-x-6 relative z-10">
+          <div className="bg-white rounded-full p-8 transform hover:scale-110 hover:rotate-12 transition-all duration-300 shadow-2xl">
+            <User size={80} className="text-purple-600" />
+          </div>
+          <div>
+            <h2 className="text-4xl font-black mb-2">Alex Johnson</h2>
+            <p className="text-purple-100 text-xl font-semibold">Computer Science • Semester 6</p>
+            <p className="text-purple-100 font-medium mt-1">alex.johnson@university.edu</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="bg-white rounded-2xl p-8 shadow-2xl text-center transform hover:scale-110 hover:rotate-2 transition-all duration-300">
+          <div className="text-6xl font-black text-gray-800 mb-2">{completedAssignments}</div>
+          <p className="text-gray-800 font-bold text-lg">Completed Assignments</p>
+        </div>
+        <div className="bg-white rounded-2xl p-8 shadow-2xl text-center transform hover:scale-110 hover:rotate-2 transition-all duration-300">
+          <div className="text-6xl font-black text-gray-800 mb-2">{completedProjects}</div>
+          <p className="text-gray-800 font-bold text-lg">Projects Completed</p>
+        </div>
+        <div className="bg-white rounded-2xl p-8 shadow-2xl text-center transform hover:scale-110 hover:rotate-2 transition-all duration-300">
+          <div className="text-6xl font-black text-gray-800 mb-2">{Math.round(assignmentProgress)}%</div>
+          <p className="text-gray-800 font-bold text-lg">Overall Progress</p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-8 shadow-2xl mb-6 transform hover:scale-[1.02] transition-all">
+        <h3 className="text-2xl font-black text-gray-800 mb-6 flex items-center">
+          <TrendingUp className="mr-3 text-blue-500" size={32} />
+          Academic Progress
+        </h3>
+        <div className="space-y-6">
+          <div>
+            <div className="flex justify-between mb-3">
+              <span className="text-gray-700 font-black text-lg">Assignment Completion</span>
+              <span className="text-green-600 font-black text-2xl">{Math.round(assignmentProgress)}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-6 shadow-inner">
+              <div 
+                className="bg-green-800 h-6 rounded-full transition-all duration-1000 shadow-lg flex items-center justify-end pr-3"
+                style={{ width: `${assignmentProgress}%` }}
+              >
+                <span className="text-white font-bold">🎯</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-8 shadow-2xl">
+        <h3 className="text-2xl font-black text-gray-800 mb-6 flex items-center">
+          <span className="text-3xl mr-3">⚙️</span>
+          Account Settings
+        </h3>
+        <div className="space-y-4">
+          <button className="w-full bg-green-800 text-white py-4 rounded-xl font-black text-lg hover:shadow-2xl transition-all transform hover:scale-105">
+            Edit Profile
+          </button>
+          <button className="w-full bg-green-800 text-white py-4 rounded-xl font-black text-lg hover:shadow-2xl transition-all transform hover:scale-105">
+            Notification Settings
+          </button>
+          <button className="w-full bg-red-800 text-white py-4 rounded-xl font-black text-lg hover:shadow-2xl transition-all transform hover:scale-105">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main App Component
+export default function AURAApp() {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [toast, setToast] = useState(null);
+
+  const [timetable, setTimetable] = useState([
+    { day: 'Monday', subject: 'Data Structures', time: '9:00 AM - 10:30 AM', room: 'CS-101' },
+    { day: 'Monday', subject: 'Machine Learning', time: '11:00 AM - 12:30 PM', room: 'CS-203' },
+    { day: 'Tuesday', subject: 'Web Development', time: '10:00 AM - 11:30 AM', room: 'CS-105' },
+    { day: 'Wednesday', subject: 'Database Systems', time: '9:00 AM - 10:30 AM', room: 'CS-102' },
+    { day: 'Thursday', subject: 'Algorithms', time: '2:00 PM - 3:30 PM', room: 'CS-201' },
+    { day: 'Friday', subject: 'Software Engineering', time: '11:00 AM - 12:30 PM', room: 'CS-104' }
+  ]);
+
+  const [assignments, setAssignments] = useState([
+    { id: 1, subject: 'Data Structures', title: 'Binary Tree Implementation', dueDate: '2025-11-01', completed: false },
+    { id: 2, subject: 'Machine Learning', title: 'Linear Regression Project', dueDate: '2025-11-05', completed: true },
+    { id: 3, subject: 'Web Development', title: 'React Portfolio', dueDate: '2025-10-28', completed: false },
+    { id: 4, subject: 'Database Systems', title: 'SQL Query Assignment', dueDate: '2025-11-03', completed: false }
+  ]);
+
+  const [materials, setMaterials] = useState([
+    { id: 1, title: 'Introduction to Algorithms', subject: 'Data Structures', type: 'PDF' },
+    { id: 2, title: 'Neural Networks Basics', subject: 'Machine Learning', type: 'Slides' },
+    { id: 3, title: 'React Hooks Guide', subject: 'Web Development', type: 'Notes' }
+  ]);
+
+  const [projects, setProjects] = useState([
+    { 
+      id: 1, 
+      title: 'E-Commerce Website', 
+      subject: 'Web Development',
+      milestones: [
+        { text: 'Design UI/UX', completed: true },
+        { text: 'Setup Backend', completed: true },
+        { text: 'Implement Frontend', completed: false },
+        { text: 'Testing & Deployment', completed: false }
+      ]
+    },
+    { 
+      id: 2, 
+      title: 'Image Classification Model', 
+      subject: 'Machine Learning',
+      milestones: [
+        { text: 'Data Collection', completed: true },
+        { text: 'Model Training', completed: false },
+        { text: 'Evaluation', completed: false }
+      ]
+    }
+  ]);
+
+  const reminders = [
+    'Submit ML assignment by Friday',
+    'Study for Database midterm',
+    'Group meeting at 3 PM tomorrow',
+    'Renew library books'
+  ];
+
+  const showToast = (message, type = 'info') => {
+    setToast({ message, type });
+  };
+
+  const renderPage = () => {
+    switch(currentPage) {
+      case 'home':
+        return <HomePage assignments={assignments} timetable={timetable} reminders={reminders} />;
+      case 'timetable':
+        return <TimetablePage timetable={timetable} setTimetable={setTimetable} showToast={showToast} />;
+      case 'assignments':
+        return <AssignmentsPage assignments={assignments} setAssignments={setAssignments} showToast={showToast} />;
+      case 'materials':
+        return <MaterialsPage materials={materials} setMaterials={setMaterials} showToast={showToast} />;
+      case 'projects':
+        return <ProjectsPage projects={projects} setProjects={setProjects} showToast={showToast} />;
+      case 'ai-hub':
+        return <AIHubPage showToast={showToast} />;
+      case 'profile':
+        return <ProfilePage assignments={assignments} projects={projects} />;
+      default:
+        return <HomePage assignments={assignments} timetable={timetable} reminders={reminders} />;
+    }
+  };
+
+  return (
+  <div className="min-h-screen bg-gray-50">
+      <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      
+      <div className="ml-64 p-8">
+        <div className="max-w-7xl mx-auto">
+          {renderPage()}
+        </div>
+      </div>
+
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
+
+      <style jsx>{`
+        @keyframes toast-slide-in {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        .toast-slide-in {
+          animation: toast-slide-in 0.3s ease-out;
+        }
+
+        @keyframes modal-pop-in {
+          from {
+            transform: scale(0.8);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+        .modal-pop-in {
+          animation: modal-pop-in 0.3s ease-out;
+        }
+
+        @keyframes message-slide-in {
+          from {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        .message-slide-in {
+          animation: message-slide-in 0.3s ease-out;
+        }
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out;
+        }
+
+        @keyframes shimmer {
+          0% {
+            background-position: -1000px 0;
+          }
+          100% {
+            background-position: 1000px 0;
+          }
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+
+        @keyframes glow-pulse {
+          0%, 100% {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4), 0 0 40px rgba(99, 102, 241, 0.2);
+          }
+          50% {
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 60px rgba(99, 102, 241, 0.3);
+          }
+        }
+
+        @keyframes gradient-shift {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
+        @keyframes bounce-gentle {
+          0%, 100% {
+            transform: translateY(0) scale(1);
+          }
+          50% {
+            transform: translateY(-5px) scale(1.05);
+          }
+        }
+
+        @keyframes wiggle {
+          0%, 100% {
+            transform: rotate(0deg);
+          }
+          25% {
+            transform: rotate(-3deg);
+          }
+          75% {
+            transform: rotate(3deg);
+          }
+        }
+
+        /* Enhanced hover effects */
+        .card-hover-glow {
+          transition: all 0.3s ease;
+        }
+        .card-hover-glow:hover {
+          box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3), 0 0 40px rgba(167, 139, 250, 0.2);
+          transform: translateY(-8px) scale(1.02);
+        }
+
+        .button-hover-lift {
+          transition: all 0.3s ease;
+        }
+        .button-hover-lift:hover {
+          transform: translateY(-3px) scale(1.05);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .animate-shimmer {
+          background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0) 100%
+          );
+          background-size: 1000px 100%;
+          animation: shimmer 3s infinite;
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-glow-pulse {
+          animation: glow-pulse 2s ease-in-out infinite;
+        }
+
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradient-shift 5s ease infinite;
+        }
+
+        .animate-bounce-gentle {
+          animation: bounce-gentle 2s ease-in-out infinite;
+        }
+
+        .animate-wiggle {
+          animation: wiggle 1s ease-in-out infinite;
+        }
+
+        /* 3D card effect */
+        .card-3d {
+          transform-style: preserve-3d;
+          transition: transform 0.3s ease;
+        }
+        .card-3d:hover {
+          transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-10px);
+        }
+
+        /* Glowing border effect */
+        .glow-border {
+          position: relative;
+        }
+        .glow-border::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          padding: 2px;
+          background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe, #667eea);
+          background-size: 300% 300%;
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          animation: gradient-shift 3s ease infinite;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .glow-border:hover::before {
+          opacity: 1;
+        }
+
+        /* Ripple effect */
+        @keyframes ripple {
+          0% {
+            transform: scale(0);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+          background: linear-gradient(to bottom, #f0f4ff, #fce7f3);
+          border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(to bottom, #667eea, #764ba2, #f093fb);
+          border-radius: 10px;
+          border: 2px solid transparent;
+          background-clip: padding-box;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(to bottom, #5568d3, #5a3d8a, #d67ce0);
+          border-radius: 10px;
+          border: 2px solid transparent;
+          background-clip: padding-box;
+        }
+
+        /* Sparkle effect */
+        @keyframes sparkle {
+          0%, 100% {
+            opacity: 0;
+            transform: scale(0);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .sparkle {
+          position: relative;
+        }
+        .sparkle::after {
+          content: '✨';
+          position: absolute;
+          top: -10px;
+          right: -10px;
+          font-size: 20px;
+          animation: sparkle 2s ease-in-out infinite;
+        }
+
+        /* Neon glow text */
+        .neon-text {
+          text-shadow: 0 0 10px rgba(99, 102, 241, 0.8),
+                       0 0 20px rgba(99, 102, 241, 0.6),
+                       0 0 30px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Gradient border animation */
+        @keyframes border-dance {
+          0%, 100% {
+            border-color: #667eea;
+          }
+          25% {
+            border-color: #764ba2;
+          }
+          50% {
+            border-color: #f093fb;
+          }
+          75% {
+            border-color: #4facfe;
+          }
+        }
+
+        .border-animate {
+          animation: border-dance 3s ease infinite;
+        }
+      `}</style>
+    </div>
+  );
+}
