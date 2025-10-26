@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Student Assistant | Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body, html { background: #f3eee8!important; }
+    .tab-active { background: #efe3d5; color: #845a35; font-weight: bold; }
+    .card { transition: box-shadow .22s, transform .18s; }
+    .card:hover { box-shadow: 0 4px 16px #b68d5830; transform: scale(1.025);}
+    .hidden {display:none;}
+    .fade-in {animation:fadein .5s;}
+    @keyframes fadein {from{opacity:0;} to{opacity:1;}}
+    .cute-shadow { box-shadow: 0 4px 28px 0 rgba(192,157,110,0.11);}
+    /* Login page overrides */
+    #mainContent { display: none; }
+    #loginPage { display: flex; }
+    .student-anim { transform: translateY(0px); animation: floaty 2.8s ease-in-out infinite alternate;}
+    @keyframes floaty { 0%{ transform: translateY(0);} 100%{ transform: translateY(16px);} }
+  </style>
+</head>
+
+
+<body class="min-h-screen bg-[#f3eee8] font-sans">
+
+
+<!-- Login Overlay Page (FIXED) -->
+<section id="loginPage" class="fixed inset-0 z-50 items-center justify-center min-h-screen bg-[#f3eee8] fade-in" style="background: #f3eee8;">
+  <div class="bg-[#fff9f1] cute-shadow rounded-3xl px-8 py-10 max-w-sm w-full text-center border border-[#eedfc8] relative">
+    <div class="mb-2 flex flex-col items-center">
+      <span class="text-4xl font-extrabold text-[#855e42]">☆</span>
+      <!-- Animated Student SVG -->
+      <div class="student-anim mb-2">
+        <svg width="80" height="80" fill="none" viewBox="0 0 80 80">
+          <ellipse cx="40" cy="75" rx="22" ry="4" fill="#f5e9dd"/>
+          <circle cx="40" cy="39" r="22" fill="#faecd6" stroke="#a67c52" stroke-width="2"/>
+          <ellipse cx="40" cy="44" rx="14" ry="8" fill="#fff9f1" />
+          <ellipse cx="32.5" cy="39.5" rx="3.5" ry="4.5" fill="#845a35"/>
+          <ellipse cx="47.5" cy="39.5" rx="3.5" ry="4.5" fill="#845a35"/>
+          <path d="M35 54 Q40 57 45 54" stroke="#a67c52" stroke-width="1.5" fill="none"/>
+          <ellipse cx="40" cy="24" rx="11" ry="6" fill="#b68d58" />
+          <rect x="30" y="11" width="20" height="8" rx="4" fill="#a67c52"/>
+        </svg>
+      </div>
+      <div class="font-extrabold text-2xl mt-2 text-[#a67c52]">Student Assistant</div>
+    </div>
+    <h2 class="font-semibold text-xl text-[#a67435] mb-4">Welcome Back!</h2>
+    <form id="loginForm" class="space-y-4">
+      <input type="text" required placeholder="Username" class="w-full px-4 py-2 rounded-xl border border-[#eedfc8] bg-[#fbf5ed] text-[#a67c52] focus:outline-none focus:ring-2 focus:ring-[#eedfc8] transition" />
+      <input type="password" required placeholder="Password" class="w-full px-4 py-2 rounded-xl border border-[#eedfc8] bg-[#fbf5ed] text-[#a67c52] focus:outline-none focus:ring-2 focus:ring-[#eedfc8] transition" />
+      <button type="submit" class="w-full bg-[#faecd6] text-[#a67c52] font-bold py-2 rounded-xl hover:bg-[#eedfc8] transition">Log In</button>
+    </form>
+    <p class="text-xs text-[#b3966b] mt-5">For students &bull; © 2025 Student Assistant</p>
+  </div>
+</section>
+<!-- End Login Overlay Page -->
+
+
+<div id="mainContent">
+<div class="flex min-h-screen">
+
+
+  <!-- Sidebar Navigation (Tabs) -->
+  <aside class="w-16 md:w-44 bg-[#f8f1e9] border-r border-[#eedfc8] flex flex-col items-center py-7 shadow-sm">
+    <div class="text-[#845a35] font-extrabold text-3xl px-2 mb-7">☆
+      <span class="hidden md:inline">Student Assistant</span>
+    </div>
+    <nav id="sidebarTabs" class="space-y-2 w-full px-2">
+      <button class="tab-active tab w-full py-2 px-2 rounded-lg text-md flex items-center gap-2 hover:bg-[#efd6c2]" data-tab="dashboard">☞<span class="hidden md:inline">Dashboard</span></button>
+      <button class="tab w-full py-2 px-2 rounded-lg text-md flex items-center gap-2 hover:bg-[#efd6c2]" data-tab="timetable">☞<span class="hidden md:inline">Timetable</span></button>
+      <button class="tab w-full py-2 px-2 rounded-lg text-md flex items-center gap-2 hover:bg-[#efd6c2]" data-tab="assignments">✍︎<span class="hidden md:inline">Assignments</span></button>
+      <button class="tab w-full py-2 px-2 rounded-lg text-md flex items-center gap-2 hover:bg-[#efd6c2]" data-tab="lectures">🔍<span class="hidden md:inline">Lectures</span></button>
+      <button class="tab w-full py-2 px-2 rounded-lg text-md flex items-center gap-2 hover:bg-[#efd6c2]" data-tab="projects">𖣠<span class="hidden md:inline">Projects</span></button>
+      <button class="tab w-full py-2 px-2 rounded-lg text-md flex items-center gap-2 hover:bg-[#efd6c2]" data-tab="ai">⤷<span class="hidden md:inline">AI Hub</span></button>
+      <button class="tab w-full py-2 px-2 rounded-lg text-md flex items-center gap-2 hover:bg-[#efd6c2]" data-tab="profile">𖠋<span class="hidden md:inline">Your Profile</span></button>
+    </nav>
+  </aside>
+
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 min-h-screen bg-[#f3eee8]">
+
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="fade-in">
+      <h1 class="text-3xl font-extrabold text-[#845a35] mb-6">Dashboard :</h1>
+      <div class="grid md:grid-cols-3 gap-6 mb-6">
+        <div class="card cute-shadow rounded-2xl p-6 bg-[#f7f3ed] text-[#845a35]">
+          <h2 class="font-semibold text-lg mb-2 flex items-center"> <span class="ml-1">Today:</span></h2>
+          <ul>
+            <li> 9:00pm - Data Structures Using Python</li>
+            <li> 11:00pm - Biochemistry</li>
+            <li> 12:00pm - IAPH</li>
+            <li> 2:00pm - LIB</li>
+            <li> 3:00pm - Microbiology</li>
+          </ul>
+        </div>
+        <div class="card cute-shadow rounded-2xl p-6 bg-[#ede7de] text-[#b3966b]">
+          <h2 class="font-semibold text-lg mb-2 flex items-center"> <span class="ml-1">Project Deadlines</span></h2>
+          <ul>
+            <li> Mathematics: Oct 29th</li>
+            <li> Chemistry Project: Oct 30th</li>
+          </ul>
+        </div>
+        <div class="card cute-shadow rounded-2xl p-6 bg-[#faecd6] text-[#a67435]">
+          <h2 class="font-semibold text-lg mb-2 flex items-center"> <span class="ml-1">Reminders</span></h2>
+          <ul>
+            <li> Scholarship form</li>
+            <li> Study @ 6pm!</li>
+            <li> Sliptest on 23/11/25</li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card cute-shadow rounded-2xl p-6 bg-[#f5e9dd] text-[#855e42]">
+          <h2 class="font-semibold text-lg mb-2 flex items-center">Quick Overview</h2>
+          <p><b>Timetable:</b> 5 classes today</p>
+          <p><b>Assignments:</b> 2 due soon</p>
+          <p><b>AI Tools:</b> Updated notes!</p>
+        </div>
+        <div class="card cute-shadow rounded-2xl p-6 bg-[#fff9f1] text-[#a98661]">
+          <h2 class="font-semibold text-lg mb-2 flex items-center">💡 Quote</h2>
+          <blockquote class="italic text-lg">
+            “Success is not the key to happiness. Happiness is the key to success.”
+          </blockquote>
+        </div>
+      </div>
+      <!-- Productivity Chart with Chart.js -->
+      <div class="bg-[#fdf7ef] rounded-xl max-w-lg mt-8 px-4 py-6 card cute-shadow">
+        <h3 class="text-lg font-bold text-[#a67435] mb-3 flex items-center">📊 Productivity Chart</h3>
+        <canvas id="productivityChart" height="130"></canvas>
+      </div>
+    </section>
+
+
+    <!-- Timetable -->
+    <section id="timetable" class="hidden fade-in">
+      <h1 class="text-2xl font-extrabold text-[#a67435] mb-4">Weekly Timetable</h1>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="card cute-shadow rounded-xl p-5 bg-[#f6e9dc] text-[#aa7a4c] mb-2">
+          <h2 class="font-semibold mb-2 flex items-center">📏 Monday - Math</h2>
+          <p>⏲ 9:00 AM</p>
+          <button onclick="alert('Edit feature coming soon')" class="mt-2 bg-[#eedfc8] text-[#845a35] px-2 py-1 rounded hover:bg-[#ede7de] transition font-semibold">Edit</button>
+        </div>
+        <div class="card cute-shadow rounded-xl p-5 bg-[#ede7de] text-[#ab8a67] mb-2">
+          <h2 class="font-semibold mb-2 flex items-center">🔬 Tuesday - Chemistry</h2>
+          <p>⏲ 11:00 AM</p>
+          <button onclick="alert('Edit feature coming soon')" class="mt-2 bg-[#eedfc8] text-[#845a35] px-2 py-1 rounded hover:bg-[#f6e9dc] transition font-semibold">Edit</button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Assignments -->
+    <section id="assignments" class="hidden fade-in">
+      <h1 class="text-2xl font-extrabold text-[#a67435] mb-4">Assignments</h1>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="card cute-shadow rounded-xl p-6 bg-[#faecd6] text-[#a67435]">
+          <h2 class="font-semibold mb-2">Math (Pending)</h2>
+          <p>Due: 2025-10-27</p>
+          <div class="w-full bg-[#f5e9dd] rounded h-2 mt-2"><div class="h-2 bg-[#c7ad95] rounded" style="width:30%"></div></div>
+          <button onclick="completeAssignment(this)" class="bg-[#ede7de] px-3 py-1 rounded mt-2 hover:bg-[#ede7de] transition text-[#8c6239] font-semibold">Mark Complete</button>
+        </div>
+        <div class="card cute-shadow rounded-xl p-6 bg-[#ede7de] text-[#a79382]">
+          <h2 class="font-semibold mb-2">Chemistry (In Progress)</h2>
+          <p>Due: 2025-10-29</p>
+          <div class="w-full bg-[#f5e9dd] rounded h-2 mt-2"><div class="h-2 bg-[#c7ad95] rounded" style="width:60%"></div></div>
+          <button onclick="completeAssignment(this)" class="bg-[#eedfc8] px-3 py-1 rounded mt-2 hover:bg-[#faecd6] transition text-[#b3966b] font-semibold">Mark Complete</button>
+        </div>
+        <div class="card cute-shadow rounded-xl p-6 bg-[#fff9f1] text-[#a87c47]">
+          <h2 class="font-semibold mb-2">Biology (Completed)</h2>
+          <p>Due: 2025-10-26</p>
+          <div class="w-full bg-[#f5e9dd] rounded h-2 mt-2"><div class="h-2 bg-[#c6bbad] rounded" style="width:100%"></div></div>
+          <span class="bg-[#ece3d6] text-[#7c684e] px-3 py-1 rounded mt-2 font-bold">Done!</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Lectures -->
+    <section id="lectures" class="hidden fade-in">
+      <h1 class="text-2xl font-extrabold text-[#a67435] mb-4">Lecture Materials</h1>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="card cute-shadow rounded-xl p-5 bg-[#faecd6] text-[#a67435]">
+          <h2 class="font-semibold mb-2">Week1_Lecture.pdf</h2>
+          <button onclick="summarize(this)" class="bg-[#ede7de] px-2 py-1 rounded hover:bg-[#eedfc8] mb-2 font-bold text-[#b3966b]">Summarize</button>
+          <div class="mt-2 text-sm">No summary yet.</div>
+        </div>
+        <div class="card cute-shadow rounded-xl p-5 bg-[#f5e9dd] text-[#955f2c]">
+          <h2 class="font-semibold mb-2">Notes_Chapter2.pdf</h2>
+          <button onclick="summarize(this)" class="bg-[#eedfc8] px-2 py-1 rounded hover:bg-[#faecd6] mb-2 font-bold text-[#a67c52]">Summarize</button>
+          <div class="mt-2 text-sm">Summary: Photosynthesis process in plants...</div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Projects -->
+    <section id="projects" class="hidden fade-in">
+      <h1 class="text-2xl font-extrabold text-[#a67435] mb-4">Projects</h1>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="card cute-shadow rounded-xl p-5 bg-[#faecd6] text-[#a67435]">
+          <h2 class="font-semibold mb-2">EcoBot</h2>
+          <p>Milestones: 2/3</p>
+          <div class="w-full bg-[#f5e9dd] rounded h-2 mt-2"><div class="h-2 bg-[#c7ad95] rounded" style="width:66%"></div></div>
+          <button onclick="alert('Add Milestone feature coming soon')" class="bg-[#eedfc8] px-3 py-1 mt-2 rounded hover:bg-[#ede7de] font-semibold text-[#8c6239]">Add Milestone</button>
+        </div>
+        <div class="card cute-shadow rounded-xl p-5 bg-[#ede7de] text-[#955f2c]">
+          <h2 class="font-semibold mb-2">Chemistry Research</h2>
+          <p>Milestones: 1/4</p>
+          <div class="w-full bg-[#f5e9dd] rounded h-2 mt-2"><div class="h-2 bg-[#c7ad95] rounded" style="width:25%"></div></div>
+          <button onclick="alert('Add Milestone feature coming soon')" class="bg-[#faecd6] px-3 py-1 mt-2 rounded hover:bg-[#eedfc8] font-semibold text-[#a67c52]">Add Milestone</button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- AI Hub -->
+    <section id="ai" class="hidden fade-in">
+      <h1 class="text-2xl font-extrabold text-[#a67435] mb-4">AI Hub</h1>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="card cute-shadow rounded-xl p-5 bg-[#ede7de] text-[#b3966b]">
+          <h2 class="font-semibold mb-2">AI Tutor</h2>
+          <p>Chat for concept doubts.</p>
+          <button class="bg-[#faecd6] text-[#a67c52] px-2 py-1 rounded mt-2 hover:bg-[#f5e9dd] font-semibold">Try it!</button>
+        </div>
+        <div class="card cute-shadow rounded-xl p-5 bg-[#fff9f1] text-[#a87c47]">
+          <h2 class="font-semibold mb-2">Quiz Generator</h2>
+          <p>Create MCQs from notes.</p>
+          <button class="bg-[#faecd6] text-[#a67c52] px-2 py-1 rounded mt-2 hover:bg-[#f5e9dd] font-semibold">Try it!</button>
+        </div>
+        <div class="card cute-shadow rounded-xl p-5 bg-[#ede7de] text-[#b3966b]">
+          <h2 class="font-semibold mb-2">PDF Summarizer</h2>
+          <p>Summarize PDF content.</p>
+          <button class="bg-[#faecd6] text-[#a67c52] px-2 py-1 rounded mt-2 hover:bg-[#f5e9dd] font-semibold">Try it!</button>
+        </div>
+        <div class="card cute-shadow rounded-xl p-5 bg-[#faecd6] text-[#a67435]">
+          <h2 class="font-semibold mb-2">Study Planner</h2>
+          <p>Generate optimal schedule.</p>
+          <button class="bg-[#ede7de] text-[#b3966b] px-2 py-1 rounded mt-2 hover:bg-[#f5e9dd] font-semibold">Try it!</button>
+        </div>
+        <div class="card cute-shadow rounded-xl p-5 bg-[#f5e9dd] text-[#8c6239]">
+          <h2 class="font-semibold mb-2">Voice Assistant</h2>
+          <button onclick="tryVoice()" class="bg-[#ede7de] text-[#b3966b] px-3 py-1 rounded">🎤 Voice Interaction</button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Profile -->
+    <section id="profile" class="hidden fade-in">
+      <h1 class="text-2xl font-extrabold text-[#a67435] mb-5">Profile</h1>
+      <div class="card cute-shadow rounded-xl p-5 bg-[#fff9f1] text-[#a67c52] max-w-md mx-auto">
+        <h2 class="font-semibold mb-2">Alex Student</h2>
+        <p><b>Semester:</b> Semester 3</p>
+        <p><b>Progress:</b>
+          <span class="ml-2 font-bold">80%</span>
+          <div class="w-32 bg-[#faecd6] rounded h-2 mt-2 mb-2">
+            <div class="h-2 bg-[#a67435] rounded transition" style="width:80%"></div>
+          </div>
+        </p>
+        <button class="bg-[#faecd6] text-[#a67c52] px-3 py-1 rounded mt-2 hover:bg-[#f5e9dd] font-semibold">Logout</button>
+      </div>
+    </section>
+    <footer class="pt-12 text-xs text-[#b3966b] text-center">
+      for students • © 2025 Student Assistant
+    </footer>
+  </main>
+</div>
+</div>
+
+
+<script>
+// Login logic: hide main UI until login
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+});
+document.getElementById('loginForm').onsubmit = function(e) {
+  e.preventDefault();
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+};
+
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(btn => btn.onclick = function() {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('tab-active'));
+  btn.classList.add('tab-active');
+  document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(btn.dataset.tab).classList.remove('hidden');
+});
+
+
+// Assignment complete demo
+function completeAssignment(btn) {
+  btn.parentElement.querySelector('.h-2').style.width = "100%";
+  btn.parentElement.querySelector('h2').innerHTML = btn.parentElement.querySelector('h2').innerHTML.replace("Pending","Completed").replace("In Progress","Completed");
+  btn.outerHTML = `<span class="bg-[#ece3d6] text-[#7c684e] px-3 py-1 rounded mt-2 font-bold">Done!</span>`;
+}
+
+
+// Lecture summarize demo
+function summarize(btn) {
+  btn.nextElementSibling.innerText = "Summary generated: Photosynthesis process in plants...";
+  btn.disabled = true;
+  btn.innerText = "Summarized!";
+}
+
+
+// Voice interaction demo
+function tryVoice() {
+  if ('speechSynthesis' in window)
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance("How may I assist you today?"));
+  else
+    alert("Speech Synthesis not supported on this device.");
+}
+
+
+// Draw Chart.js graph after DOM loads
+window.addEventListener('DOMContentLoaded', function(){
+  const ctx = document.getElementById('productivityChart')?.getContext('2d');
+  if(ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+        datasets: [{
+          label: 'Productivity (%)',
+          data: [78, 85, 68, 90, 91, 87, 72],
+          backgroundColor: [
+            '#d3baa3', '#b68d58', '#dbb76b', '#845a35', '#f7dfc7', '#c4b395', '#ede7de'
+          ],
+          borderRadius: 8,
+          borderWidth: 0
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true, max: 100 }
+        },
+        plugins: { legend: { display: false } },
+        animation: { duration: 900 }
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
